@@ -1,18 +1,42 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Header from './components/Header';
+import Main from './components/Main';
 import './App.css';
+import axios from 'axios';
 
-class App extends Component {
+class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      navList: ''
+    }
+  }
+
+  componentWillMount() {
+
+    axios.get('/data/v1/US/navigation')
+      .then((response) =>  {
+       if (response.data) {
+        console.log(response.data.nav[0].navGroups[0].navItems);
+          this.setState({
+            navList: response.data.nav[0].navGroups[0].navItems
+          });
+       }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className="mainWrapper">
+        <Header />
+        {
+          this.state.navList.length && <Main navList={this.state.navList}/>
+        }
       </div>
     );
   }
